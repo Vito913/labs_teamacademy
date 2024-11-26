@@ -61,7 +61,6 @@ Example usage:
     Product.save_product_data(products)
 """
 
-from tabnanny import check
 from bs4 import BeautifulSoup, Tag
 from urllib.parse import quote
 from information_types import Product, Scraper

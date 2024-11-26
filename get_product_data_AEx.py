@@ -32,13 +32,9 @@ def get_product_page_data_AE(scraper: Scraper, url: str, max_reviews: int = 50) 
     title = title_elem.get_text(strip=True) if title_elem else "N/A"
     price_elem = soup.select_one("span.price--currentPriceText--V8_y_b5.pdp-comp-price-current.product-price-value")
     price = price_elem.get_text(strip=True) if price_elem else "N/A"
-
-    # Extract star rating
-    stars_element = soup.select_one("strong[data-spm-anchor-id='a2g0o.detail.0.i11.1291bv4ibv4ieV']")
-    stars = stars_element.get_text(strip=True) if stars_element else "N/A"
-    # Extract star rating
-    stars_element = soup.select_one("strong[data-spm-anchor-id='a2g0o.detail.0.i11.1291bv4ibv4ieV']")
-    stars = stars_element.get_text(strip=True) if stars_element else "N/A"
+    # Extract star rating from the rating element 
+    stars_element = soup.select_one("div.header--num--GaAGwoZ")
+    stars = float(stars_element.get_text(strip=True)) if stars_element else 0
     # Click "View More" to load reviews
     try:
         # Try CSS selector first
@@ -83,7 +79,7 @@ def get_product_page_data_AE(scraper: Scraper, url: str, max_reviews: int = 50) 
                 review_text_elem = element.select_one("div.list--itemReview--xQUhO78")
                 review_text = review_text_elem.get_text(strip=True) if review_text_elem else ""
                 review_text = review_text.encode('ascii', 'ignore').decode('ascii').replace("\n", " ")
-                reviews.append({"title": None, "content": review_text, "rating": rating})
+                reviews.append({"content": review_text, "rating": rating})
             if not review_elements:
                 break
     except Exception as e:
@@ -98,7 +94,7 @@ def get_product_page_data_AE(scraper: Scraper, url: str, max_reviews: int = 50) 
         review_text = review_text_elem.get_text(strip=True) if review_text_elem else ""
         # clean text from emojis and \n 
         review_text = review_text.encode('ascii', 'ignore').decode('ascii').replace("\n", " ")
-        reviews.append({"title": None, "content": review_text, "rating": rating})
+        reviews.append({"content": review_text, "rating": rating})
 
     return Product(title=title, price=price,rating=stars if stars else 0, about_product=spec_list, reviews=reviews)
 
